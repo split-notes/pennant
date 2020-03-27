@@ -1,0 +1,3 @@
+# Any pushes to master should be reviewed by CTO
+# This is mostly about making it difficult to accidentally push to master
+*       @split-notes/board
