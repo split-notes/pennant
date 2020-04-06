@@ -1,19 +1,24 @@
 version: '3'
 
 services:
-#  app:
-#    container_name: "bili-app"
-#    links:
-#      - db
-#      - redis
-#    depends_on:
-#      - db
-#      - redis
-#    ports:
-#      - '8080:8080'
-#    build: "./"
-#    volumes:
-#      - ./:/go/src/bili
+  pennant-flagger:
+    container_name: "pennant-flagger"
+    links:
+      - db
+    depends_on:
+      - db
+    ports:
+      - '7777:7777'
+    build: "./deployments/submodules/pennant-flagger/deployment"
+    volumes:
+      - ./deployments/submodules/pennant-flagger/:/app
+    environment:
+      SERVER_PORT: "7777"
+      MYSQL_SCHEMA: "pennant"
+      MYSQL_HOST: "db"
+      MYSQL_PORT: "3306"
+      SECRETS_FILE: "/app/secrets.json"
+      MIGRATION_LOCATION: "db/migrations"
   db:
     container_name: "pennant-db"
     image: mysql:5.7
