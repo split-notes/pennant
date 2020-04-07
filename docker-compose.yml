@@ -1,6 +1,21 @@
 version: '3'
 
 services:
+  pennant-admin-backend:
+    container_name: "pennant-admin-backend"
+    links:
+      - pennant-flagger
+    depends_on:
+      - pennant-flagger
+    ports:
+      - '8080:8080'
+    build: "./deployments/submodules/pennant-admin-backend/deployment"
+    volumes:
+    - ./deployments/submodules/pennant-admin-backend/:/app
+    environment:
+      SERVER_PORT: "8080"
+      PENNANT_FLAGGER_HOST: "pennant-flagger"
+      PENNANT_FLAGGER_PORT: "7777"
   pennant-flagger:
     container_name: "pennant-flagger"
     links:

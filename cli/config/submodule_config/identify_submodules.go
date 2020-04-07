@@ -29,6 +29,7 @@ func IdentifySubmodules() ([]Submodule, error) {
 
 		configData := Submodule{
 			ProjectPath: projectPath,
+			ProjectName: f.Name(),
 		}
 		_ = json.Unmarshal(configFile, &configData)
 

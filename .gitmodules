@@ -1,3 +1,6 @@
 [submodule "deployments/submodules/pennant-flagger"]
 	path = deployments/submodules/pennant-flagger
 	url = git@github.com:split-notes/pennant-flagger.git
+[submodule "deployments/submodules/pennant-admin-backend"]
+	path = deployments/submodules/pennant-admin-backend
+	url = git@github.com:split-notes/pennant-admin-backend.git

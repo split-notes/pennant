@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 var MockCmd = &cobra.Command{
@@ -34,7 +35,8 @@ func Mock(_ *cobra.Command, _ []string) {
 		}
 
 		if  configData.Language == "golang"{
-			f, err := os.Open(fmt.Sprintf("%s/services", configData.ProjectPath))
+			servicesDir := fmt.Sprintf("%s/services", configData.ProjectPath)
+			f, err := os.Open(servicesDir)
 			if err != nil {
 				log.Println(err.Error())
 				return
@@ -48,10 +50,32 @@ func Mock(_ *cobra.Command, _ []string) {
 
 			for _, file := range fileInfo {
 				if file.IsDir() {
-					command := bash.GoMock(file.Name())
-					if err := utils.Exec(command, &configData.ProjectPath); err != nil {
-						log.Println(err.Error())
-						return
+					if strings.HasPrefix(file.Name(), "grpc") {
+						grpcF, err := os.Open(fmt.Sprintf("%s/%s", servicesDir, file.Name()))
+						if err != nil {
+							log.Println(err.Error())
+							return
+						}
+						grpcFileInfo, err := grpcF.Readdir(-1)
+						grpcF.Close()
+
+						for _, grpcFile := range grpcFileInfo {
+							if strings.HasSuffix(grpcFile.Name(), ".pb.go"){
+								mockName := strings.TrimSuffix(grpcFile.Name(), ".pb.go")
+
+								command := bash.GoMockReflect(configData.ProjectName, mockName)
+								if err := utils.Exec(command, &configData.ProjectPath); err != nil {
+									log.Println(err.Error())
+									return
+								}
+							}
+						}
+					} else {
+						command := bash.GoMockSource(file.Name())
+						if err := utils.Exec(command, &configData.ProjectPath); err != nil {
+							log.Println(err.Error())
+							return
+						}
 					}
 				}
 			}
