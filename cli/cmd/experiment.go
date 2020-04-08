@@ -1,10 +1,9 @@
 package cmd
 
 import (
-	"fmt"
+	"github.com/ktr0731/go-fuzzyfinder"
 	"github.com/spf13/cobra"
-	"github.com/split-notes/pennant/cli/config"
-	"io/ioutil"
+	"github.com/split-notes/pennant/cli/config/submodule_config"
 	"log"
 )
 
@@ -17,16 +16,26 @@ var ExperimentCmd = &cobra.Command{
 }
 
 func Experiment(_ *cobra.Command, _ []string) {
-	var configs = config.GetConfigFromViper()
-
-	files, err := ioutil.ReadDir(fmt.Sprintf("%s/deployments/submodules/", configs.PennantConfig.ProjectFilePath))
+	submodules, err := submodule_config.IdentifySubmodules(nil, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err.Error())
+		return
 	}
+	results, err := fuzzyfinder.FindMulti(submodules,
+		func(i int) string {
+			return submodules[i].ProjectName
+		})
+	if err != nil {
+		log.Println("no submodules selected")
+		return
+	}
+	var selected []submodule_config.Submodule
+	for _, i := range results {
+		selected = append(selected, submodules[i])
+	}
+	log.Println(selected)
 
-	for _, f := range files {
-		fmt.Println(f.Name())
-	}
+	//return &splitOutput[selected], nil
 }
 
 func init() {
