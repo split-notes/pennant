@@ -8,7 +8,7 @@ import (
 )
 
 
-func IdentifySubmodules() ([]Submodule, error) {
+func IdentifySubmodules(languageFilter *string, transportFilter *string) ([]Submodule, error) {
 	var configs = config.GetConfigFromViper()
 
 	submodulesFilePath := fmt.Sprintf("%s/deployments/submodules", configs.PennantConfig.ProjectFilePath)
@@ -32,6 +32,13 @@ func IdentifySubmodules() ([]Submodule, error) {
 			ProjectName: f.Name(),
 		}
 		_ = json.Unmarshal(configFile, &configData)
+
+		if languageFilter != nil && configData.Language != *languageFilter {
+			continue
+		}
+		if transportFilter != nil && configData.Transport != *transportFilter {
+			continue
+		}
 
 		submodules = append(submodules, configData)
 	}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/split-notes/pennant/cli/bash"
-	"github.com/split-notes/pennant/cli/config/submodule_config"
+	"github.com/split-notes/pennant/cli/services/git_svc"
 	"github.com/split-notes/pennant/cli/utils"
 	"log"
 	"os"
@@ -26,7 +26,9 @@ func Protoc(_ *cobra.Command, _ []string) {
 		return
 	}
 
-	submodules, err := submodule_config.IdentifySubmodules()
+	transportFilter := "grpc"
+	languageFilter := "golang"
+	submodules, err := git_svc.SelectSubmodules(&languageFilter, &transportFilter)
 	if err != nil {
 		log.Println(err.Error())
 		return

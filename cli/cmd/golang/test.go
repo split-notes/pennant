@@ -3,7 +3,7 @@ package golang
 import (
 	"github.com/spf13/cobra"
 	"github.com/split-notes/pennant/cli/bash"
-	"github.com/split-notes/pennant/cli/config/submodule_config"
+	"github.com/split-notes/pennant/cli/services/git_svc"
 	"github.com/split-notes/pennant/cli/utils"
 	"log"
 )
@@ -17,7 +17,8 @@ var TestCmd = &cobra.Command{
 }
 
 func Test(_ *cobra.Command, _ []string) {
-	submodules, err := submodule_config.IdentifySubmodules()
+	languageFilter := "golang"
+	submodules, err := git_svc.SelectSubmodules(&languageFilter, nil)
 	if err != nil {
 		log.Println(err.Error())
 		return

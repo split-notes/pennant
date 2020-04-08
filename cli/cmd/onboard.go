@@ -6,6 +6,8 @@ import (
 	"github.com/split-notes/pennant/cli/config/submodule_config"
 	"github.com/split-notes/pennant/cli/utils"
 	"log"
+	"os/exec"
+	"strings"
 )
 
 var OnboardEverythingCmd = &cobra.Command{
@@ -17,7 +19,19 @@ var OnboardEverythingCmd = &cobra.Command{
 }
 
 func OnboardEverything(_ *cobra.Command, _ []string) {
-	submodules, err := submodule_config.IdentifySubmodules()
+	// Check for necessary stuff
+	if _, err := exec.LookPath("git"); err != nil {
+		log.Println(err.Error())
+		return
+	}
+
+	command := bash.GitOnboard()
+	if err := utils.Exec(command, nil); err != nil {
+		log.Println(err.Error())
+		return
+	}
+
+	submodules, err := submodule_config.IdentifySubmodules(nil, nil)
 	if err != nil {
 		log.Println(err.Error())
 		return
@@ -26,6 +40,13 @@ func OnboardEverything(_ *cobra.Command, _ []string) {
 	for _, configData := range submodules {
 		if configData.Language == "golang" {
 			if err := utils.Exec(bash.GoModVendor, &configData.ProjectPath); err != nil {
+				log.Println(err.Error())
+				return
+			}
+		}
+
+		if strings.HasSuffix(configData.Language, "js") {
+			if err := utils.Exec(bash.NpmInstall, &configData.ProjectPath); err != nil {
 				log.Println(err.Error())
 				return
 			}
