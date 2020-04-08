@@ -4,3 +4,6 @@
 [submodule "deployments/submodules/pennant-admin-backend"]
 	path = deployments/submodules/pennant-admin-backend
 	url = git@github.com:split-notes/pennant-admin-backend.git
+[submodule "deployments/submodules/pennant-admin-frontend"]
+	path = deployments/submodules/pennant-admin-frontend
+	url = git@github.com:split-notes/pennant-admin-frontend.git
